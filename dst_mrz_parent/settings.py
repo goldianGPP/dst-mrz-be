@@ -131,8 +131,8 @@ LOGGING = {
         "dst-mrz-be": {
             "level": "DEBUG",
             "class": "logging.handlers.TimedRotatingFileHandler",
-            "filename": "C:/Users/USER/Documents/data/logs/dst-mrz-be.log",
-            #"filename": "C:/Users/USER/Documents/TEST/logs/dst-mrz-be.log",
+            "filename": "/data/logs/dst-mrz-be",
+            #"filename": "C:/Users/USER/Documents/data/logs/dst-mrz-be.log",
             "when": "midnight",
             "backupCount": 7,
             "formatter": "verbose",
