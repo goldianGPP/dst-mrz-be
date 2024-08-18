@@ -2,14 +2,13 @@ import time
 import logging
 import threading
 from datetime import datetime
-from paddleocr import PaddleOCR
-logger = logging.getLogger("dst-mrz-be")
 from modules.dst_mrz_s3.service.s3_storage_service import S3StorageService
 from modules.ocr_paddleocr.service.extract_text_service import ExtractTextService
 from modules.mrz_reader.service.mrz_service import MrzService
 from modules.dst_mrz_maintenance.service.gender_service import GenderService
 from modules.dst_mrz_maintenance.service.country_service import CountryService
 from dst_mrz_parent.exceptions import BusinessException
+logger = logging.getLogger("dst-mrz-be")
 
 class OcrMrzService:
     _instance = None
@@ -29,11 +28,7 @@ class OcrMrzService:
             with cls._lock:
                 if not cls._instance:
                     cls._instance = super(OcrMrzService, cls).__new__(cls)
-                    cls._instance._initialize()
         return cls._instance
-
-    def _initialize(self):
-        self.ocr_model = PaddleOCR(use_angle_cls=True, lang='en')
 
     def extract(self, base64):
         start_time = time.time()
