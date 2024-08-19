@@ -1,3 +1,4 @@
+import gc
 import logging
 import threading
 import base64
@@ -36,5 +37,8 @@ class ExtractTextService:
         image_np = np.array(image)
         
         result = self.ocr_model.ocr(image_np, cls=True)
+
+        del image_np
+        gc.collect()
         
         return result

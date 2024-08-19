@@ -96,31 +96,26 @@ class OcrMrzService:
         try:
             gender = self.genderService.by_code(mrz_result.sex)
         except Exception as e:
-            validation_count = validation_count + 1
             gender = None
         try:
             country = self.countryService.by_alpha3(mrz_result.nationality)
         except Exception as e:
-            validation_count = validation_count + 1
             country = None
 
         dto['fullName'] = (f"{mrz_result.name}  {mrz_result.surname}").strip()
         try:
             dto['identityNo'] = mrz_result.document_number
         except Exception as e:
-            validation_count = validation_count + 1
             dto['identityNo'] = ""
         
         try:
             dto['dateOfBirth'] = self.convert_date(mrz_result.birth_date)
         except Exception as e:
-            validation_count = validation_count + 1
             dto['dateOfBirth'] = ""
         
         try:
             dto['expiryDate'] = self.convert_date(mrz_result.expiry_date)
         except Exception as e:
-            validation_count = validation_count + 1
             dto['expiryDate'] = ""
         
         if gender is not None:
