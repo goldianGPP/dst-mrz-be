@@ -35,7 +35,7 @@ class OcrMrzService:
         logger.info(f"Initial time: {start_time - start_time} seconds")
 
         formatted_time = datetime.fromtimestamp(start_time).strftime('%Y_%m_%d_%H_%M_%S')
-        self.s3StorageService.put_object(base64, self.bucket_id, f"image_{formatted_time}.jpeg")
+        # self.s3StorageService.put_object(base64, self.bucket_id, f"image_{formatted_time}.jpeg")
 
         after_storing_time = time.time()
         logger.info(f"S3 Store time: {after_storing_time - start_time} seconds")
@@ -45,23 +45,29 @@ class OcrMrzService:
         logger.info(f"After extraction: {after_extraction_time - after_storing_time} seconds")
         
         mrz = ""
+        lines = []
         for line in result:
             for word_info in line:
-                text = word_info[-1][0]
+                lines.append(word_info[-1][0])
 
-                if "<" in text:
-                    text_len = len(text)
-                    if text_len == 44:
-                        mrz = mrz + text + "\n"
-                    elif text_len > 35 and text_len < 44:
-                        need_len = 44 - text_len
-                        mrz = mrz + text + ("<" * need_len) + "\n"
-                    elif text_len > 44:
-                        need_len = text_len - 44
-                        for _ in range(need_len):
-                            mrz = mrz.replace("<", "", 1)
+        # Process only the last two lines
+        for line in lines[-2:]:  # This will get the last two lines
+            text_len = len(line)
+            
+            logger.info("-------------")
+            logger.info(line)
+            if text_len == 44:
+                mrz = mrz + line + "\n"
+            elif text_len < 44:
+                need_len = 44 - text_len
+                mrz = mrz + line + ("<" * need_len) + "\n"
+            elif text_len > 44:
+                need_len = text_len - 44
+                for _ in range(need_len):
+                    mrz = mrz.replace("<", "", 1)
 
         mrz = mrz.rstrip('\n').upper()
+        logger.info("\n")
         logger.info(f"MRZ string: {mrz}")
 
         try:
