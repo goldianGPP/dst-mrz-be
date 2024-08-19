@@ -3,9 +3,10 @@ import threading
 import base64
 import numpy as np
 from io import BytesIO
-from PIL import Image
 from paddleocr import PaddleOCR
 import logging
+import cv2
+from PIL import Image, ImageEnhance
 
 class ExtractTextService:
     _instance = None
@@ -27,22 +28,26 @@ class ExtractTextService:
             det_model_dir='ch_PP-OCRv4_det_infer',
             cls_model_dir='ch_ppocr_mobile_v2.0_cls_infer'
         )
+        self.ocr_model.det_lang = "ml"
         self.lock = threading.Lock()
+
+    def lightweight_preprocess(self, image):
+        gray_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+        _, thresh_image = cv2.threshold(gray_image, 110, 255, cv2.THRESH_BINARY)
+        return thresh_image
 
     def extract_from_base64(self, imageBase64):
         with self.lock:
             image_data = base64.b64decode(imageBase64)
             image = Image.open(BytesIO(image_data))
-            
             image_np = np.array(image)
+            preprocessed_image = self.lightweight_preprocess(image_np)
             
             try:
-                result = self.ocr_model.ocr(image_np, cls=True)
+                return self.ocr_model.ocr(preprocessed_image, cls=True)
             except Exception as e:
                 logging.error(f"Error processing OCR: {e}")
-                result = None
+                return None
             finally: 
                 del image_np
                 gc.collect()
-            
-            return result

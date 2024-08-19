@@ -35,7 +35,7 @@ class OcrMrzService:
         logger.info(f"Initial time: {start_time - start_time} seconds")
 
         formatted_time = datetime.fromtimestamp(start_time).strftime('%Y_%m_%d_%H_%M_%S')
-        self.s3StorageService.put_object(base64, self.bucket_id, f"image_{formatted_time}.jpeg")
+        # self.s3StorageService.put_object(base64, self.bucket_id, f"image_{formatted_time}.jpeg")
 
         after_storing_time = time.time()
         logger.info(f"S3 Store time: {after_storing_time - start_time} seconds")
@@ -44,27 +44,36 @@ class OcrMrzService:
         after_extraction_time = time.time()
         logger.info(f"After extraction: {after_extraction_time - after_storing_time} seconds")
         
-        mrz = ""
-        lines = []
+        mrz_lines = []
         for line in result:
             for word_info in line:
-                lines.append(word_info[-1][0])
+                text = word_info[-1][0]
+                if "<" in text:
+                    mrz_lines.append(text)
 
-        # Process only the last two lines
-        for line in lines[-2:]:  # This will get the last two lines
-            text_len = len(line)
-            
-            logger.info("-------------")
-            logger.info(line)
+        mrz = ""
+        index = 0
+        mrz_lines_len = len(mrz_lines)
+        while index < mrz_lines_len:
+            text = mrz_lines[index]
+            if index + 1 < mrz_lines_len:
+                if mrz_lines[index+1].startswith("<"):
+                    index += 1
+                    text = text + mrz_lines[index]
+            text_len = len(text)
+            text.replace(" ", "<")
             if text_len == 44:
-                mrz = mrz + line + "\n"
+                mrz = mrz + text + "\n"
             elif text_len < 44:
                 need_len = 44 - text_len
-                mrz = mrz + line + ("<" * need_len) + "\n"
+                mrz = mrz + text + ("<" * need_len) + "\n"
             elif text_len > 44:
                 need_len = text_len - 44
                 for _ in range(need_len):
-                    mrz = mrz.replace("<", "", 1)
+                    text = text.replace("<", "", 1)
+                mrz = mrz + text + "\n"
+
+            index += 1
 
         mrz = mrz.rstrip('\n').upper()
         logger.info("\n")
