@@ -35,7 +35,7 @@ class OcrMrzService:
         logger.info(f"Initial time: {start_time - start_time} seconds")
 
         formatted_time = datetime.fromtimestamp(start_time).strftime('%Y_%m_%d_%H_%M_%S')
-        # self.s3StorageService.put_object(base64, self.bucket_id, f"image_{formatted_time}.jpeg")
+        self.s3StorageService.put_object(base64, self.bucket_id, f"image_{formatted_time}.jpeg")
 
         after_storing_time = time.time()
         logger.info(f"S3 Store time: {after_storing_time - start_time} seconds")
