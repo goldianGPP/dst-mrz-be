@@ -1,12 +1,11 @@
 import gc
-import logging
 import threading
 import base64
+import numpy as np
 from io import BytesIO
 from PIL import Image
-import numpy as np
 from paddleocr import PaddleOCR
-logger = logging.getLogger("dst-mrz-be")
+import logging
 
 class ExtractTextService:
     _instance = None
@@ -22,23 +21,28 @@ class ExtractTextService:
 
     def _initialize(self):
         self.ocr_model = PaddleOCR(
-            use_angle_cls=True, 
+            use_angle_cls=True,
             lang='en',
             rec_model_dir='ch_PP-OCRv4_rec_infer',
             det_model_dir='ch_PP-OCRv4_det_infer',
             cls_model_dir='ch_ppocr_mobile_v2.0_cls_infer'
         )
+        self.lock = threading.Lock()
 
     def extract_from_base64(self, imageBase64):
-        image_data = base64.b64decode(imageBase64)
-        image = Image.open(BytesIO(image_data))  # Open the image using Pillow
-        
-        # Convert Pillow image to numpy array
-        image_np = np.array(image)
-        
-        result = self.ocr_model.ocr(image_np, cls=True)
-
-        del image_np
-        gc.collect()
-        
-        return result
+        with self.lock:
+            image_data = base64.b64decode(imageBase64)
+            image = Image.open(BytesIO(image_data))
+            
+            image_np = np.array(image)
+            
+            try:
+                result = self.ocr_model.ocr(image_np, cls=True)
+            except Exception as e:
+                logging.error(f"Error processing OCR: {e}")
+                result = None
+            finally: 
+                del image_np
+                gc.collect()
+            
+            return result
