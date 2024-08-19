@@ -2,4 +2,5 @@
 ch_PP-OCRv4_det_infer
 ch_PP-OCRv4_rec_infer
 ch_ppocr_mobile_v2.0_cls_infer
-settings.py
+dst_mrz_parent/settings.py
+__pycache__
