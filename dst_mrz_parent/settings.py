@@ -131,8 +131,8 @@ LOGGING = {
         "dst-mrz-be": {
             "level": "DEBUG",
             "class": "logging.handlers.TimedRotatingFileHandler",
-            # "filename": "/data/logs/dst-mrz-be.log",
-            "filename": "C:/Users/USER/Documents/data/logs/dst-mrz-be.log",
+            "filename": "/data/logs/dst-mrz-be.log",
+            #"filename": "C:/Users/USER/Documents/data/logs/dst-mrz-be.log",
             "when": "midnight",
             "backupCount": 7,
             "formatter": "verbose",
@@ -156,22 +156,22 @@ LOGGING = {
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-       'ENGINE': 'django.db.backends.mysql',
-       'NAME': 'ekyc',
-       'USER': 'ekyc',
-       'PASSWORD': 'password',
-       'HOST': 'localhost',
-       'PORT': '3306',
-    },
     # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'rds_ekyc_uat',
-    #     'USER': 'ekycuat',
-    #     'PASSWORD': 'Ekyc$uat7890$!',
-    #     'HOST': 'stack-eathl3dyeffowhra9-rdsinstance-hhvrsetupfwq.c4gx4xv2vovl.ap-southeast-1.rds.amazonaws.com',
-    #     'PORT': '3306',
+    #    'ENGINE': 'django.db.backends.mysql',
+    #    'NAME': 'ekyc',
+    #    'USER': 'ekyc',
+    #    'PASSWORD': 'password',
+    #    'HOST': 'localhost',
+    #    'PORT': '3306',
     # },
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'rds_ekyc_uat',
+        'USER': 'ekycuat',
+        'PASSWORD': 'Ekyc$uat7890$!',
+        'HOST': 'stack-eathl3dyeffowhra9-rdsinstance-hhvrsetupfwq.c4gx4xv2vovl.ap-southeast-1.rds.amazonaws.com',
+        'PORT': '3306',
+    },
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
     #     'NAME': 'rds_ekyc_uat',
