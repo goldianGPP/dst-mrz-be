@@ -22,7 +22,11 @@ class ExtractTextService:
     def _initialize(self):
         self.ocr_model = PaddleOCR(
             use_angle_cls=True, 
-            lang='en')
+            lang='en',
+            rec_model_dir='ch_PP-OCRv4_rec_infer',
+            det_model_dir='ch_PP-OCRv4_det_infer',
+            cls_model_dir='ch_ppocr_mobile_v2.0_cls_infer'
+        )
 
     def extract_from_base64(self, imageBase64):
         image_data = base64.b64decode(imageBase64)
