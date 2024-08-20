@@ -22,7 +22,7 @@ class ExtractTextService:
 
     def _initialize(self):
         self.ocr_model = PaddleOCR(
-            use_angle_cls=True,
+            use_angle_cls=False,
             lang='en',
             rec_model_dir='ch_PP-OCRv4_rec_infer',
             det_model_dir='ch_PP-OCRv4_det_infer',
@@ -50,4 +50,5 @@ class ExtractTextService:
                 return None
             finally: 
                 del image_np
+                del preprocessed_image
                 gc.collect()
