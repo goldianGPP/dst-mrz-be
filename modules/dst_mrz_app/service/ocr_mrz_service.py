@@ -44,38 +44,7 @@ class OcrMrzService:
         after_extraction_time = time.time()
         logger.info(f"After extraction: {after_extraction_time - after_storing_time} seconds")
         
-        mrz_lines = []
-        for line in result:
-            for word_info in line:
-                text = word_info[-1][0]
-                if "<" in text:
-                    mrz_lines.append(text)
-
-        mrz = ""
-        index = 0
-        mrz_lines_len = len(mrz_lines)
-        while index < mrz_lines_len:
-            text = mrz_lines[index]
-            if index + 1 < mrz_lines_len:
-                if mrz_lines[index+1].startswith("<"):
-                    index += 1
-                    text = text + mrz_lines[index]
-            text_len = len(text)
-            text.replace(" ", "<")
-            if text_len == 44:
-                mrz = mrz + text + "\n"
-            elif text_len < 44:
-                need_len = 44 - text_len
-                mrz = mrz + text + ("<" * need_len) + "\n"
-            elif text_len > 44:
-                need_len = text_len - 44
-                for _ in range(need_len):
-                    text = text.replace("<", "", 1)
-                mrz = mrz + text + "\n"
-
-            index += 1
-
-        mrz = mrz.rstrip('\n').upper()
+        mrz = OcrMrzService.paddle_result_to_mrz(result)
         logger.info("\n")
         logger.info(f"MRZ string: {mrz}")
 
@@ -91,6 +60,46 @@ class OcrMrzService:
             return dto
         except Exception as e:
             raise BusinessException("MRZ Data not found", "MRZ-00003")
+        
+    @staticmethod
+    def paddle_result_to_mrz(result):
+        mrz = ""
+        for text in result:
+            text_len = len(text)
+            if "<" in text:
+                text = text.replace(" ", "<")  # Replace spaces with '<'
+                if text_len < 44:
+                    # Calculate the number of '<' needed
+                    need_len = 44 - text_len
+
+                    # Find the position of "<<<" in the text to insert additional '<'
+                    triple_chevron_index = text.find("<<<")
+                    if triple_chevron_index != -1:
+                        # Split the text around the "<<<" and insert the additional '<'
+                        before = text[:triple_chevron_index + 3]
+                        after = text[triple_chevron_index + 3:]
+                        text = before + ("<" * need_len) + after
+                    else:
+                        # If "<<<" is not found, pad at the end
+                        text = text + ("<" * need_len)
+
+                elif text_len > 44:
+                    # Find the position of "<<<" in the text to remove excess characters
+                    excess_len = text_len - 44
+                    triple_chevron_index = text.find("<<<")
+                    if triple_chevron_index != -1:
+                        before = text[:triple_chevron_index + 3]
+                        after = text[triple_chevron_index + 3 + excess_len:]  # Remove excess characters
+                        text = before + after
+                    else:
+                        # If "<<<" is not found, trim the end
+                        text = text[:44]
+
+                # Add text to MRZ with a newline
+                mrz = mrz + text[:44] + "\n"  # Ensure it's exactly 44 characters
+
+        mrz = mrz.rstrip('\n').upper()
+        return mrz
     
 
     def to_dto(self, mrz_result):
