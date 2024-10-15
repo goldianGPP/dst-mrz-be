@@ -156,14 +156,14 @@ LOGGING = {
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #    'ENGINE': 'django.db.backends.mysql',
-    #    'NAME': 'ekyc',
-    #    'USER': 'ekyc',
-    #    'PASSWORD': 'password',
-    #    'HOST': 'localhost',
-    #    'PORT': '3306',
-    # },
+    'default': {
+       'ENGINE': 'django.db.backends.mysql',
+       'NAME': 'ekyc',
+       'USER': 'ekyc',
+       'PASSWORD': 'password',
+       'HOST': 'localhost',
+       'PORT': '3306',
+    },
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
     #     'NAME': 'rds_ekyc_uat',
@@ -172,14 +172,14 @@ DATABASES = {
     #     'HOST': 'stack-eathl3dyeffowhra9-rdsinstance-hhvrsetupfwq.c4gx4xv2vovl.ap-southeast-1.rds.amazonaws.com',
     #     'PORT': '3306',
     # },
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ekyc_prod_db',
-        'USER': 'ekycprod',
-        'PASSWORD': 'Ekyc$prod7890$',
-        'HOST': 'stack-myotlhxb9uihvq2j1-rdsinstance-nd6e77bqwx5i.cejqrlghr7n6.ap-southeast-1.rds.amazonaws.com',
-        'PORT': '3306',
-    },
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'ekyc_prod_db',
+    #     'USER': 'ekycprod',
+    #     'PASSWORD': 'Ekyc$prod7890$',
+    #     'HOST': 'stack-myotlhxb9uihvq2j1-rdsinstance-nd6e77bqwx5i.cejqrlghr7n6.ap-southeast-1.rds.amazonaws.com',
+    #     'PORT': '3306',
+    # },
 }
 
 S3 = {
